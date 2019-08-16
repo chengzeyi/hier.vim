@@ -108,7 +108,7 @@ endfunction
 
 function! s:EchoCurrentMessage()
   let lnum = bufnr('%') . line('.')
-  if !has_key(g:hier_lnum2item, lnum) | return | endif
+  if !has_key(s:hier_lnum2item, lnum) | return | endif
   call s:EchoMessage(s:hier_lnum2item[lnum].text)
 endfunction
 
