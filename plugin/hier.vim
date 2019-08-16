@@ -91,19 +91,6 @@ function! s:Hier(clearonly)
 	endfor
 endfunction
 
-command! -nargs=0 HierUpdate call s:Hier(0)
-command! -nargs=0 HierClear call s:Hier(1)
-
-command! -nargs=0 HierToggle let g:hier_enabled = !g:hier_enabled | call s:Hier(!g:hier_enabled)
-
-command! -nargs=0 HierStart let g:hier_enabled = 1 | HierUpdate
-command! -nargs=0 HierStop let g:hier_enabled = 0 | HierClear
-
-augroup Hier
-	au!
-	au QuickFixCmdPost,BufEnter,WinEnter * :HierUpdate
-augroup END
-
 function! s:EchoMessage(message)
   let [old_ruler, old_showcmd] = [&ruler, &showcmd]
 
@@ -125,6 +112,19 @@ function! s:EchoCurrentMessage()
   call s:EchoMessage(g:hier_lnum2item[lnum].text)
 endfunction
 
-if g:hier_echo_current_message
-	autocmd CursorMoved * call s:EchoCurrentMessage()
-endif
+command! -nargs=0 HierUpdate call s:Hier(0)
+command! -nargs=0 HierClear call s:Hier(1)
+
+command! -nargs=0 HierStart let g:hier_enabled = 1 | HierUpdate
+command! -nargs=0 HierStop let g:hier_enabled = 0 | HierClear
+
+command! -nargs=0 HierToggle let g:hier_enabled = !g:hier_enabled | call s:Hier(!g:hier_enabled)
+
+augroup Hier
+	au!
+	au QuickFixCmdPost,BufEnter,WinEnter * :HierUpdate
+	if g:hier_echo_current_message
+		autocmd CursorMoved * call s:EchoCurrentMessage()
+	endif
+augroup END
+
