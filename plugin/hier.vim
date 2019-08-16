@@ -58,7 +58,7 @@ function! s:Hier(clearonly)
 		endfor
 	endfor
 	
-	for lnum in keys(g:hier_lnum2item)
+	for lnum in keys(s:hier_lnum2item)
 		call remove(s:hier_lnum2item, lnum)
 	endfor
 
