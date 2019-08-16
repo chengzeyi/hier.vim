@@ -106,7 +106,7 @@ function! s:EchoMessage(message)
   let [&ruler, &showcmd] = [old_ruler, old_showcmd]
 endfunction
 
-function! g:EchoCurrentMessage()
+function! s:EchoCurrentMessage()
   let lnum = bufnr('%') . line('.')
   " if !has_key(g:hier_lnum2item, lnum) | return | endif
   " call s:EchoMessage(g:hier_lnum2item[lnum].text)
@@ -125,7 +125,7 @@ augroup Hier
 	au!
 	au QuickFixCmdPost,BufEnter,WinEnter * :HierUpdate
 	if g:hier_echo_current_message
-		autocmd CursorMoved * call g:EchoCurrentMessage()
+		autocmd CursorMoved * call s:EchoCurrentMessage()
 	endif
 augroup END
 
