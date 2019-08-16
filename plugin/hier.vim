@@ -48,7 +48,7 @@ function! s:Getlist(winnr, type)
 	endif
 endfunction
 
-let g:hier_lnum2item = {}
+let s:hier_lnum2item = {}
 function! s:Hier(clearonly)
 	for m in getmatches()
 		for h in ['QFError', 'QFWarning', 'QFInfo', 'LocError', 'LocWarning', 'LocInfo']
@@ -59,7 +59,7 @@ function! s:Hier(clearonly)
 	endfor
 	
 	for lnum in keys(g:hier_lnum2item)
-		call remove(g:hier_lnum2item, lnum)
+		call remove(s:hier_lnum2item, lnum)
 	endfor
 
 	if g:hier_enabled == 0 || a:clearonly == 1
@@ -81,7 +81,7 @@ function! s:Hier(clearonly)
 				endif
 
 				if i.lnum > 0
-					let g:hier_lnum2item[i.lnum] = i
+					let s:hier_lnum2item[i.lnum] = i
 					call matchadd(hi_group, '\%'.i.lnum.'l')
 				elseif i.pattern != ''
 					call matchadd(hi_group, i.pattern)
@@ -108,9 +108,8 @@ endfunction
 
 function! s:EchoCurrentMessage()
   let lnum = bufnr('%') . line('.')
-  " if !has_key(g:hier_lnum2item, lnum) | return | endif
-  " call s:EchoMessage(g:hier_lnum2item[lnum].text)
-  call s:EchoMessage('xxx')
+  if !has_key(g:hier_lnum2item, lnum) | return | endif
+  call s:EchoMessage(s:hier_lnum2item[lnum].text)
 endfunction
 
 command! -nargs=0 HierUpdate call s:Hier(0)
