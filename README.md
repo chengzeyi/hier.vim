@@ -13,11 +13,11 @@ Visit https://github.com/chengzeyi/hier.vim to get the latest version.
 ## USAGE
 
 The following commands are provided:
-- HierStart		" enable hier highlighting
-- HierStop		" disable hier highlighting
-- HierToggle    " toggle enable/disable hier highlighting
-- HierUpdate	" update error highlighting for current buffer
-- HierClear		" remove highlighting - it will be displayed again when :HierUpdate is called
+- HierStart		enable hier highlighting
+- HierStop		disable hier highlighting
+- HierToggle    toggle enable/disable hier highlighting
+- HierUpdate	update error highlighting for current buffer
+- HierClear		remove highlighting - it will be displayed again when :HierUpdate is called
 
 ## CUSTOMIZATION
 
