@@ -1,7 +1,7 @@
-" hier.vim:		Highlight quickfix errors
-" Last Modified: Tue 03. May 2011 10:55:27 +0900 JST
-" Author:		Jan Christoph Ebersbach <jceb@e-jc.de>
-" Version:		1.3
+" hier.vim:		Highlight quickfix errors & Echo error message
+" Last Modified: 2019 Aug 17
+" Author:		Cheng Zeyi <ichengzeyi@gmail.com>
+" Version:		1.0
 
 if (exists("g:loaded_hier") && g:loaded_hier) || &cp
     finish
@@ -21,95 +21,96 @@ let g:hier_highlight_group_locw = ! exists('g:hier_highlight_group_locw') ? 'Spe
 let g:hier_highlight_group_loci = ! exists('g:hier_highlight_group_loci') ? 'SpellRare' : g:hier_highlight_group_loci
 
 if eval('g:hier_highlight_group_qf') != ''
-	exec "hi! link QFError    ".g:hier_highlight_group_qf
+    exec "hi! link QFError    ".g:hier_highlight_group_qf
 endif
 if eval('g:hier_highlight_group_qfw') != ''
-	exec "hi! link QFWarning  ".g:hier_highlight_group_qfw
+    exec "hi! link QFWarning  ".g:hier_highlight_group_qfw
 endif
 if eval('g:hier_highlight_group_qfi') != ''
-	exec "hi! link QFInfo     ".g:hier_highlight_group_qfi
+    exec "hi! link QFInfo     ".g:hier_highlight_group_qfi
 endif
 
 if eval('g:hier_highlight_group_loc') != ''
-	exec "hi! link LocError   ".g:hier_highlight_group_loc
+    exec "hi! link LocError   ".g:hier_highlight_group_loc
 endif
 if eval('g:hier_highlight_group_locw') != ''
-	exec "hi! link LocWarning ".g:hier_highlight_group_locw
+    exec "hi! link LocWarning ".g:hier_highlight_group_locw
 endif
 if eval('g:hier_highlight_group_loci') != ''
-	exec "hi! link LocInfo    ".g:hier_highlight_group_loci
+    exec "hi! link LocInfo    ".g:hier_highlight_group_loci
 endif
 
 function! s:Getlist(winnr, type)
-	if a:type == 'qf'
-		return getqflist()
-	else
-		return getloclist(a:winnr)
-	endif
+    if a:type == 'qf'
+        return getqflist()
+    else
+        return getloclist(a:winnr)
+    endif
 endfunction
 
-let s:hier_lnum2item = {}
+let s:hier_id2item = {}
 function! s:Hier(clearonly)
-	for m in getmatches()
-		for h in ['QFError', 'QFWarning', 'QFInfo', 'LocError', 'LocWarning', 'LocInfo']
-			if m.group == h
-				call matchdelete(m.id)
-			endif
-		endfor
-	endfor
-	
-	for lnum in keys(s:hier_lnum2item)
-		call remove(s:hier_lnum2item, lnum)
-	endfor
+    for m in getmatches()
+        for h in ['QFError', 'QFWarning', 'QFInfo', 'LocError', 'LocWarning', 'LocInfo']
+            if m.group == h
+                call matchdelete(m.id)
+            endif
+        endfor
+    endfor
 
-	if g:hier_enabled == 0 || a:clearonly == 1
-		return
-	endif
+    for lnum in keys(s:hier_id2item)
+        call remove(s:hier_id2item, lnum)
+    endfor
 
-	let bufnr = bufnr('%')
+    if g:hier_enabled == 0 || a:clearonly == 1
+        return
+    endif
 
-	for type in ['qf', 'loc']
-		for i in s:Getlist(0, type)
-			if i.bufnr == bufnr
-				let hi_group = 'QFError'
-				if i.type == 'I' || i.type == 'info'
-					let hi_group = 'QFInfo'
-				elseif i.type == 'W' || i.type == 'warning'
-					let hi_group = 'QFWarning'
-				elseif eval('g:hier_highlight_group_'.type) == ""
-					continue
-				endif
+    let bufnr = bufnr('%')
 
-				if i.lnum > 0
-					let s:hier_lnum2item[i.lnum] = i
-					call matchadd(hi_group, '\%'.i.lnum.'l')
-				elseif i.pattern != ''
-					call matchadd(hi_group, i.pattern)
-				endif
-			endif
-		endfor
-	endfor
+    for type in ['qf', 'loc']
+        for i in s:Getlist(0, type)
+            if i.bufnr == bufnr
+                let hi_group = 'QFError'
+                if i.type == 'I' || i.type == 'info'
+                    let hi_group = 'QFInfo'
+                elseif i.type == 'W' || i.type == 'warning'
+                    let hi_group = 'QFWarning'
+                elseif eval('g:hier_highlight_group_'.type) == ""
+                    continue
+                endif
+
+                if i.lnum > 0
+                    let id = i.bufnr . i.lnum
+                    let s:hier_id2item[id] = i
+                    call matchadd(hi_group, '\%'.i.lnum.'l')
+                elseif i.pattern != ''
+                    call matchadd(hi_group, i.pattern)
+                endif
+            endif
+        endfor
+    endfor
 endfunction
 
 function! s:EchoMessage(message)
-  let [old_ruler, old_showcmd] = [&ruler, &showcmd]
+    let [old_ruler, old_showcmd] = [&ruler, &showcmd]
 
-  let message = substitute(a:message, "\t", repeat(' ', &tabstop), 'g')
-  let message = strpart(message, 0, winwidth(0)-1)
-  let message = substitute(message, "\n", '', 'g')
+    let message = substitute(a:message, "\t", repeat(' ', &tabstop), 'g')
+    let message = strpart(message, 0, winwidth(0)-1)
+    let message = substitute(message, "\n", '', 'g')
 
-  set noruler noshowcmd
-  redraw
+    set noruler noshowcmd
+    redraw
 
-  echo message
+    echo message
 
-  let [&ruler, &showcmd] = [old_ruler, old_showcmd]
+    let [&ruler, &showcmd] = [old_ruler, old_showcmd]
 endfunction
 
 function! s:EchoCurrentMessage()
-  let lnum = bufnr('%') . line('.')
-  if !has_key(s:hier_lnum2item, lnum) | return | endif
-  call s:EchoMessage(s:hier_lnum2item[lnum].text)
+    let id = bufnr('%') . line('.')
+    if !has_key(s:hier_id2item, id) | return | endif
+    call s:EchoMessage(s:hier_id2item[id].text)
 endfunction
 
 command! -nargs=0 HierUpdate call s:Hier(0)
@@ -121,10 +122,10 @@ command! -nargs=0 HierStop let g:hier_enabled = 0 | HierClear
 command! -nargs=0 HierToggle let g:hier_enabled = !g:hier_enabled | call s:Hier(!g:hier_enabled)
 
 augroup Hier
-	au!
-	au QuickFixCmdPost,BufEnter,WinEnter * :HierUpdate
-	if g:hier_echo_current_message
-		autocmd CursorMoved * call s:EchoCurrentMessage()
-	endif
+    au!
+    au QuickFixCmdPost,BufEnter,WinEnter * :HierUpdate
+    if g:hier_echo_current_message
+        autocmd CursorMoved * call s:EchoCurrentMessage()
+    endif
 augroup END
 
