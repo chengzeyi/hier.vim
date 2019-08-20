@@ -25,13 +25,13 @@ The highlight group can be customized by setting the following variables.
 Setting a variable to the string "" will disable highlighting of that
 group. Every type can be highlighted differently (error, warning, info):
 
-	let g:hier_highlight_group_qf    = 'SpellBad'
+	let g:hier_highlight_group_qfe   = 'SpellBad'
 	let g:hier_highlight_group_qfw   = 'SpellLocal'
-	let g:hier_highlight_group_qfi   = 'SpellRare'
+	let g:hier_highlight_group_qfi   = 'SpellCap'
 
-	let g:hier_highlight_group_loc   = 'SpellBad'
+	let g:hier_highlight_group_loce  = 'SpellBad'
 	let g:hier_highlight_group_locw  = 'SpellLocal'
-	let g:hier_highlight_group_loci  = 'SpellRare'
+	let g:hier_highlight_group_loci  = 'SpellCap'
 
 Enable/disable highlighting highlighting by default:
 
@@ -39,7 +39,7 @@ Enable/disable highlighting highlighting by default:
 
 Enable echo message for the line under cursor:
 
-    let g:hier_echo_current_messagee = 1
+	let g:hier_echo_current_messagee = 1
 
 ## INSTALLATION
 

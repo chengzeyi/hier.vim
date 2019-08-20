@@ -12,16 +12,16 @@ let g:hier_enabled = ! exists('g:hier_enabled') ? 1 : g:hier_enabled
 
 let g:hier_echo_current_message = ! exists('g:hier_echo_current_message') ? 1 : g:hier_echo_current_message
 
-let g:hier_highlight_group_qf = ! exists('g:hier_highlight_group_qf') ? 'SpellBad' : g:hier_highlight_group_qf
+let g:hier_highlight_group_qfe = ! exists('g:hier_highlight_group_qfe') ? 'SpellBad' : g:hier_highlight_group_qfe
 let g:hier_highlight_group_qfw = ! exists('g:hier_highlight_group_qfw') ? 'SpellLocal' : g:hier_highlight_group_qfw
-let g:hier_highlight_group_qfi = ! exists('g:hier_highlight_group_qfi') ? 'SpellRare' : g:hier_highlight_group_qfi
+let g:hier_highlight_group_qfi = ! exists('g:hier_highlight_group_qfi') ? 'SpellCap' : g:hier_highlight_group_qfi
 
-let g:hier_highlight_group_loc = ! exists('g:hier_highlight_group_loc') ? 'SpellBad' : g:hier_highlight_group_loc
+let g:hier_highlight_group_loce = ! exists('g:hier_highlight_group_loce') ? 'SpellBad' : g:hier_highlight_group_loce
 let g:hier_highlight_group_locw = ! exists('g:hier_highlight_group_locw') ? 'SpellLocal' : g:hier_highlight_group_locw
-let g:hier_highlight_group_loci = ! exists('g:hier_highlight_group_loci') ? 'SpellRare' : g:hier_highlight_group_loci
+let g:hier_highlight_group_loci = ! exists('g:hier_highlight_group_loci') ? 'SpellCap' : g:hier_highlight_group_loci
 
-if eval('g:hier_highlight_group_qf') != ''
-    exec "hi! link QFError    ".g:hier_highlight_group_qf
+if eval('g:hier_highlight_group_qfe') != ''
+    exec "hi! link QFError    ".g:hier_highlight_group_qfe
 endif
 if eval('g:hier_highlight_group_qfw') != ''
     exec "hi! link QFWarning  ".g:hier_highlight_group_qfw
@@ -30,8 +30,8 @@ if eval('g:hier_highlight_group_qfi') != ''
     exec "hi! link QFInfo     ".g:hier_highlight_group_qfi
 endif
 
-if eval('g:hier_highlight_group_loc') != ''
-    exec "hi! link LocError   ".g:hier_highlight_group_loc
+if eval('g:hier_highlight_group_loce') != ''
+    exec "hi! link LocError   ".g:hier_highlight_group_loce
 endif
 if eval('g:hier_highlight_group_locw') != ''
     exec "hi! link LocWarning ".g:hier_highlight_group_locw
@@ -71,19 +71,22 @@ function! s:Hier(clearonly)
     for type in ['qf', 'loc']
         for i in s:Getlist(0, type)
             if i.bufnr == bufnr
-                let hi_group = 'QFError'
-                if i.type == 'I' || i.type == 'info'
-                    let hi_group = 'QFInfo'
+                let kind = 'Info'
+                if i.type == 'E' || i.type == 'error'
+                    let kind = 'Error'
                 elseif i.type == 'W' || i.type == 'warning'
-                    let hi_group = 'QFWarning'
-                elseif eval('g:hier_highlight_group_'.type) == ""
-                    continue
+                    let kind = 'Warning'
+                endif
+                if type == 'qf'
+                    let hi_group = 'QF' . kind
+                else
+                    let hi_group = 'Loc' . kind
                 endif
 
                 if i.lnum > 0
                     let id = i.bufnr . i.lnum
                     let s:hier_id2item[id] = i
-                    call matchadd(hi_group, '\%'.i.lnum.'l')
+                    call matchadd(hi_group, '\%' . i.lnum . 'l')
                 elseif i.pattern != ''
                     call matchadd(hi_group, i.pattern)
                 endif
