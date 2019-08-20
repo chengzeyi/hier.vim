@@ -72,9 +72,9 @@ function! s:Hier(clearonly)
         for i in s:Getlist(0, type)
             if i.bufnr == bufnr
                 let kind = 'Info'
-                if i.type == 'E' || i.type == 'error'
+                if i.type == 'E' || i.type == 'e'
                     let kind = 'Error'
-                elseif i.type == 'W' || i.type == 'warning'
+                elseif i.type == 'W' || i.type == 'w'
                     let kind = 'Warning'
                 endif
                 if type == 'qf'
